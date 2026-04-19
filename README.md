@@ -21,19 +21,20 @@ It takes a simple topic as input and automatically:
 
 📥 Input
 
-POST /webhook/content-pipeline
-{
-  "topic": "AI tools"
-}
+
+curl -X POST http://localhost:5678/webhook-test/content-pipeline \
+-H "Content-Type: application/json" \
+-d '{"topic":"AI tools"}'
+
 
 📤 Output
-{
-  "status": "success",
-  "data": {
-    "summary": "...",
-    "keywords": ["...", "..."]
-  }
-}
+
+
+curl -X POST http://localhost:5678/webhook-test/content-pipeline \
+-H "Content-Type: application/json" \
+-d '{"topic":"AI tools"}'
+
+
 🛠️ Tech Stack
 
 * n8n (workflow automation)
