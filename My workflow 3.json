@@ -1,0 +1,174 @@
+{
+  "name": "My workflow 3",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "content-pipeline",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -16,
+        16
+      ],
+      "id": "0ad7be00-491d-4b7f-9b2a-a98f9ca599a4",
+      "name": "Webhook",
+      "webhookId": "906eb154-820e-4216-8464-5a31ab48237d"
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-4o-mini",
+          "mode": "list",
+          "cachedResultName": "GPT-4O-MINI"
+        },
+        "responses": {
+          "values": [
+            {
+              "content": "=Write a short SEO-friendly article about:\n\n{{$json.body.topic}}"
+            }
+          ]
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 2.1,
+      "position": [
+        256,
+        16
+      ],
+      "id": "5f870d43-0bcb-4061-819e-8a5bc5a0f467",
+      "name": "Message a model",
+      "credentials": {
+        "openAiApi": {
+          "id": "ohXZJMOAs5GBVoof",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-4o-mini",
+          "mode": "list",
+          "cachedResultName": "GPT-4O-MINI"
+        },
+        "responses": {
+          "values": [
+            {
+              "content": "=Summarize the following article and extract keywords.\n\nReturn ONLY valid JSON. No explanation.\nMake sure the JSON is complete and properly closed.\n\nFormat:\n{\n  \"summary\": \"...\",\n  \"keywords\": [\"...\", \"...\"]\n}\n\nArticle:\n{{$json.output[0].content[0].text}}"
+            }
+          ]
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 2.1,
+      "position": [
+        560,
+        16
+      ],
+      "id": "bf7a3c20-01f2-49ee-9c2c-4c9e0f3f036b",
+      "name": "Message a model1",
+      "credentials": {
+        "openAiApi": {
+          "id": "ohXZJMOAs5GBVoof",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Loop over input items and add a new field called 'myNewField' to the JSON of each one\nconst aiOutput = $json.output[0].content[0].text.trim();\n\ntry {\n  const parsed = JSON.parse(aiOutput);\n\n  return [\n    {\n      json: {\n        status: \"success\",\n        data: {\n          summary: parsed.summary,\n          keywords: parsed.keywords\n        }\n      }\n    }\n  ];\n} catch (e) {\n  return [\n    {\n      json: {\n        status: \"error\",\n        message: \"Invalid JSON from AI\",\n        raw: aiOutput\n      }\n    }\n  ];\n}"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        912,
+        16
+      ],
+      "id": "797da301-20d8-4ea4-ba82-ebd31bd96226",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        1120,
+        16
+      ],
+      "id": "864e3f31-f90e-426a-b403-57aa006640de",
+      "name": "Respond to Webhook"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Message a model",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Message a model": {
+      "main": [
+        [
+          {
+            "node": "Message a model1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Message a model1": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "9c6a3f6f-9a3e-4e8c-b8cb-6397de809223",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "2dcee9965f35c6ac8241ea033b4cd4b03637db5c4a99a7d30aa177e13232903a"
+  },
+  "id": "PUXAhLk1JVet0SS6sJabl",
+  "tags": []
+}
